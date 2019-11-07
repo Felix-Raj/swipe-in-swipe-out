@@ -52,16 +52,23 @@ class D(object):
         with open(self.log_file, 'w') as f:
             json.dump(self.logs, f)
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--si', action='store', type=str, required=False)
     parser.add_argument('--ext', action='store', type=str, required=False)
+    parser.add_argument('--iot', action='store', type=str, required=False, default='08:00')
+    parser.add_argument('-t', action='store_true', required=False)
     parser.add_argument('-o', action='store_true', required=False)
 
 
     args = parser.parse_args()
 
-    d = D()
+    d = D(*get_args(args.iot))
+
+    if args.t:
+        d.log_file = os.path.expanduser('~/.testsisologs.json')
+        d._init_logs_()
 
     for x in ('si', 'ext'):
         v = getattr(args, x)
