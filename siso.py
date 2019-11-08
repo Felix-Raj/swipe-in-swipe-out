@@ -1,88 +1,48 @@
 #! /usr/bin/python3.5
-# change shebang line as per requirement, required 3.5 or above
 
 from datetime import datetime, timedelta
-import argparse, os, json
+import json
 
-def parse_to_t(t):
-    return time(*(map(int, t.split(':'))))
+class MDay(object):
+	fields = ('si', 'tio', 'ext', 'red')
 
-def get_args(o):
-    return map(int, o.split(':'))
+	def __init__(self, si, tio, ext, red):
+		self.si = si
+		self.tio = tio
+		self.ext = ext
+		self.red = red
 
-class D(object):
-    def __init__(self, ioh=8, iom=0):
-        self.log_file = os.path.expanduser('~/.sisologs.json')
-        self.logs = dict()
-        self.ioh, self.iom = ioh, iom
+	@property
+	def so(self):
+		return self.si + (
+			self.total_ext - self.total_red)
 
-        self._init_logs_()
+	@property
+	def total_ext(self):
+		return sum(timedelta(),self.ext[:])
 
-    def _init_logs_(self):
-        try:
-            with open(self.log_file) as f:
-                self.logs = json.load(f)
-        except FileNotFoundError:
-            self.logs = {
-                'si': datetime.now().timestamp(),
-                'so': (datetime.now()+timedelta(hours=self.ioh, minutes=self.iom))
-                    .timestamp()
-                    }
-            self.save()
+	@property
+	def total_red(self):
+		return sum(self.red)
 
-    def si(self, h, m):
-        t = datetime.now()
-        sit = datetime(t.year, t.month, t.day, h, m)
-        esot = sit + timedelta(hours=self.ioh, minutes=self.iom)
+	def to_json(self):
+		return json.dumps(
+				{x: getattr(self, x) for x in self.fields}
+			)
 
-        self.logs['si'] = sit.timestamp()
-        self.logs['so'] = esot.timestamp()
+	def from_json(self, json_d):
+		return MDay(**json.loads(json_d))
 
-        self.save()
 
-    def ext(self, h=0, m=0):
-        csot = datetime.fromtimestamp(self.logs['so'])
-        self.logs['so'] = (csot + timedelta(hours=h, minutes=m)).timestamp()
-        self.save()
+def test_MDay():
+	si = datetime.today()
+	tio = timedelta()
+	ext = [timedelta(), ]
+	red = [timedelta(), ]
 
-    def red(self, h=0, m=0):
-        csot = datetime.fromtimestamp(self.logs['so'])
-        self.logs['so'] = (csot - timedelta(hours=h, minutes=m)).timestamp()
-        self.save()
-
-    def o(self):
-        return datetime.fromtimestamp(self.logs['so'])
-
-    def change_log_file(self, file_location):
-        self.log_file = file_location
-        self._init_logs_()
-
-    def save(self):
-        with open(self.log_file, 'w') as f:
-            json.dump(self.logs, f)
+	mday = MDay(si, tio, ext, red)
+	assert mday.so == mday.si
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--si', action='store', type=str, required=False, help='Swipe in time')
-    parser.add_argument('--ext', action='store', type=str, required=False, help='Extend swipe out time')
-    parser.add_argument('--red', action='store', type=str, required=False, help='Reduce swipe out time')
-    parser.add_argument('--iot', action='store', type=str, required=False, default='08:00', help='Change time in office, useful only aloing with *si*')
-    parser.add_argument('-t', action='store_true', required=False, help='Use when testing the script')
-    parser.add_argument('-o', action='store_true', required=False, help='Expected out time')
-
-
-    args = parser.parse_args()
-
-    d = D(*get_args(args.iot))
-
-    if args.t:
-        d.change_log_file(os.path.expanduser('~/.testsisologs.json'))
-
-    for x in ('si', 'ext', 'red'):
-        v = getattr(args, x)
-        if v:
-            getattr(d, x)(*get_args(v))
-    
-    print(d.o())
-    
+	test_MDay()
