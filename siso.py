@@ -53,6 +53,10 @@ class D(object):
     def o(self):
         return datetime.fromtimestamp(self.logs['so'])
 
+    def change_log_file(self, file_location):
+        self.log_file = file_location
+        self._init_logs_()
+
     def save(self):
         with open(self.log_file, 'w') as f:
             json.dump(self.logs, f)
@@ -73,8 +77,7 @@ if __name__ == '__main__':
     d = D(*get_args(args.iot))
 
     if args.t:
-        d.log_file = os.path.expanduser('~/.testsisologs.json')
-        d._init_logs_()
+        d.change_log_file(os.path.expanduser('~/.testsisologs.json'))
 
     for x in ('si', 'ext', 'red'):
         v = getattr(args, x)
