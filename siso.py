@@ -45,6 +45,11 @@ class D(object):
         self.logs['so'] = (csot + timedelta(hours=h, minutes=m)).timestamp()
         self.save()
 
+    def red(self, h=0, m=0):
+        csot = datetime.fromtimestamp(self.logs['so'])
+        self.logs['so'] = (csot - timedelta(hours=h, minutes=m)).timestamp()
+        self.save()
+
     def o(self):
         return datetime.fromtimestamp(self.logs['so'])
 
@@ -56,7 +61,8 @@ class D(object):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--si', action='store', type=str, required=False, help='Swipe in time')
-    parser.add_argument('--ext', action='store', type=str, required=False, help='Extend swipt out time')
+    parser.add_argument('--ext', action='store', type=str, required=False, help='Extend swipe out time')
+    parser.add_argument('--red', action='store', type=str, required=False, help='Reduce swipe out time')
     parser.add_argument('--iot', action='store', type=str, required=False, default='08:00', help='Change time in office, useful only aloing with *si*')
     parser.add_argument('-t', action='store_true', required=False, help='Use when testing the script')
     parser.add_argument('-o', action='store_true', required=False, help='Expected out time')
@@ -70,7 +76,7 @@ if __name__ == '__main__':
         d.log_file = os.path.expanduser('~/.testsisologs.json')
         d._init_logs_()
 
-    for x in ('si', 'ext'):
+    for x in ('si', 'ext', 'red'):
         v = getattr(args, x)
         if v:
             getattr(d, x)(*get_args(v))
