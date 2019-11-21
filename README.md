@@ -20,5 +20,5 @@ siso --iot 6:30 --si 09:30
 # iot is only useful with si
 
 siso -v
-# show a musch as details as possible
+# show as much as details as possible
 ```
