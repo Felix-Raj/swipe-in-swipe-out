@@ -18,4 +18,7 @@ siso -o  # show me my expected out time
 # to change the hours working in office use option --iot
 siso --iot 6:30 --si 09:30
 # iot is only useful with si
+
+siso -v
+# show a musch as details as possible
 ```
