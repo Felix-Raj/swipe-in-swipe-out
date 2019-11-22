@@ -115,7 +115,7 @@ class D(object):
         r = '   '.join(map(ch, self.logs['red']))
         return f"I:{self._i()}\n" \
             f"O:{self._o()}\n" \
-            f"S:{self._o()-self._i()}\n" \
+            f"S:{self._o()-self._i()-self.e()+self.r()}\n" \
             f"TE:{ext}\n" \
             f"\t{e}\n" \
             f"TR:{red}\n" \
