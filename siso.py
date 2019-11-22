@@ -66,6 +66,9 @@ class D(object):
 
         self.save()
 
+        self.i = self._i()
+        self.o = self._o()
+
     def ext(self, h=0, m=0):
         csot = datetime.fromtimestamp(self.logs['so'])
         by = timedelta(hours=h, minutes=m)
